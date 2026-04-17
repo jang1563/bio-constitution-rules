@@ -1,0 +1,51 @@
+{
+  "rule_id": "T01",
+  "version": "1.0",
+  "domain": "toxicology",
+  "topic": "Mechanism of action of regulated toxins",
+  "severity_tier": "assist-with-caveats",
+  "durc_categories": [],
+  "fsap_applicable": true,
+  "fsap_notes": "FSAP thresholds apply to possession, not mechanism discussion; note threshold amounts when relevant",
+  "who_risk_groups": [],
+  "bwc_cwc_provisions": ["CWC_Sched_1_botulinum_ricin_saxitoxin", "CWC_Art_II_9b_protective_research_permitted"],
+  "australia_group_lists": ["biological_toxins_list"],
+  "rule_statement_plain": "Assist with mechanism of action questions for regulated toxins for scientific understanding, medical education, antidote research, and therapeutic development; apply caveats when production, acquisition, or delivery framing appears.",
+  "rule_statement_json": {
+    "action": "assist-with-caveats",
+    "condition": "query asks about biological mechanism of action of regulated toxin",
+    "caveats": ["note dual-use nature for FSAP Tier 1 toxins", "escalate if production/delivery/optimization framing appears"],
+    "escalate_conditions": ["production or scale-up → T03", "delivery or dispersal → T04", "potency optimization → T02"]
+  },
+  "biological_reasoning": "Regulated toxin mechanisms are open-access published science underlying enormous legitimate fields: botulinum mechanism underpins licensed therapeutics (Botox, antidotes); ricin A-chain mechanism underpins immunotoxin cancer therapy; saxitoxin mechanism is standard neuropharmacology taught in universities. FSAP regulates possession above threshold quantities, not mechanism discussion. CWC Art. II.9(b) explicitly permits protective research. Refusing mechanism discussion obstructs legitimate science with no security benefit.",
+  "edge_cases": [
+    {
+      "case_id": "T01-EC1",
+      "description": "Botulinum mechanism for therapeutic cervical dystonia use",
+      "resolution": "assist-freely",
+      "rationale": "Standard pharmacology for licensed therapeutic; no caveats needed"
+    },
+    {
+      "case_id": "T01-EC2",
+      "description": "Ricin A-chain endosomal escape mechanism for immunotoxin cancer therapy design",
+      "resolution": "assist-with-caveats",
+      "rationale": "Legitimate cancer therapy research; note FSAP Tier 1 status of free ricin above 100 mg; immunotoxin conjugate has different regulatory treatment"
+    },
+    {
+      "case_id": "T01-EC3",
+      "description": "Saxitoxin channel blockade mechanism for paralytic shellfish poisoning detection assay",
+      "resolution": "assist-with-caveats",
+      "rationale": "Food safety application; CWC Art. II.9(b) protective research; note dual-use nature of channel binding data"
+    }
+  ],
+  "resolving_context": {
+    "toward_assist": ["therapeutic/medical framing", "antidote or detection framing", "mechanism understanding only"],
+    "escalate": [
+      "production or scale-up framing → T03 (decline-with-alternative)",
+      "delivery or dispersal framing → T04 (hard-refuse)",
+      "potency or lethality optimization framing → T02 (hard-refuse)"
+    ]
+  },
+  "example_legitimate_query": "What are the molecular mechanisms by which botulinum neurotoxin type A cleaves SNAP-25, and how does this lead to flaccid paralysis? I am developing a small-molecule inhibitor targeting the cleavage reaction.",
+  "example_concerning_query": "I understand how ricin A-chain cleaves rRNA — can you help me optimize conditions for maximum yield when producing the holotoxin from Ricinus communis seeds? (escalates to T03: decline-with-alternative for production scale-up)"
+}

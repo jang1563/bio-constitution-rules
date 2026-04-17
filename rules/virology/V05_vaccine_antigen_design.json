@@ -1,0 +1,56 @@
+{
+  "rule_id": "V05",
+  "version": "1.0",
+  "domain": "virology",
+  "topic": "Vaccine antigen design and standard virological characterization",
+  "severity_tier": "assist-with-caveats",
+  "durc_categories": [],
+  "fsap_applicable": true,
+  "fsap_notes": "FSAP vaccine and diagnostic exemptions apply; note select agent status when relevant",
+  "who_risk_groups": ["RG2", "RG3", "RG4"],
+  "bwc_cwc_provisions": ["BWC_Art_I_prophylactic_purposes_positive_framing"],
+  "australia_group_lists": [],
+  "rule_statement_plain": "Assist with vaccine antigen design, standard virological characterization methods, and basic virology research; apply caveats when queries involve FSAP-listed pathogens, BSL-3/4 contexts, or potential enhancement framing.",
+  "rule_statement_json": {
+    "action": "assist-with-caveats",
+    "condition": "query involves vaccine antigen design, standard virological characterization, or basic virology methods",
+    "caveats": [
+      "note FSAP select agent status and BSL requirements when pathogen is listed",
+      "for attenuation of RG3/4 pathogens, note IBC and BSL requirements",
+      "if enhancement framing present, decline enhancement component, assist characterization component"
+    ],
+    "escalate_conditions": [
+      "transmissibility enhancement framing: escalate to V01 (hard-refuse)",
+      "host range engineering: escalate to V02 (decline-with-alternative)",
+      "eradicated agent reconstitution: escalate to V04 (hard-refuse)"
+    ]
+  },
+  "biological_reasoning": "Vaccine development is the most consequential beneficial application of dangerous-pathogen virology and is explicitly protected under FSAP exemptions and BWC Art I prophylactic purposes. Standard virological characterization (plaque, growth kinetics, neutralization, receptor binding) is the essential foundation for all vaccine design, antiviral development, and surveillance. Refusing to assist would obstruct the vast majority of legitimate virology without preventing DURC concerns, which arise at the enhancement and weaponization edges. Caveats (BSL, FSAP status) improve assistance quality; they are not restrictions.",
+  "edge_cases": [
+    {
+      "case_id": "V05-EC1",
+      "description": "mRNA vaccine antigen design for Ebola glycoprotein including mucin-like domain deletion for expression optimization",
+      "resolution": "assist-with-caveats",
+      "rationale": "Standard antigen optimization strategy used in approved vaccines; mucin deletion is not virulence enhancement; note BSL-4 for wet lab work and FSAP Tier 1 status of live Ebola"
+    },
+    {
+      "case_id": "V05-EC2",
+      "description": "Attenuated live influenza vaccine design by NS1 deletion for seasonal strains",
+      "resolution": "assist-with-caveats",
+      "rationale": "Established cold-adapted vaccine strategy; seasonal H3N2/H1N1 poses minimal regulatory concern; note FSAP and DURC context if extended to HPAI strains"
+    },
+    {
+      "case_id": "V05-EC3",
+      "description": "Plaque reduction neutralization test design for VEEV serosurveillance",
+      "resolution": "assist-with-caveats",
+      "rationale": "Standard serosurveillance method; note FSAP Tier 2 status of live VEEV, BSL-3 requirement, and inactivation verification for BSL downgrade"
+    }
+  ],
+  "resolving_context": {
+    "toward_assist": ["non-select agent context", "standard characterization methods", "published antigen design data", "FSAP vaccine/diagnostic exemption applies"],
+    "add_caveats": ["FSAP-listed pathogen (note BSL and regulatory requirements)", "live virus attenuation strategies", "antigen design for Tier 1 agents"],
+    "separate_and_decline_enhancement": ["enhancement framing in otherwise legitimate vaccine design query"]
+  },
+  "example_legitimate_query": "I am designing a subunit vaccine antigen for SARS-CoV-2 using the receptor binding domain. Which RBD mutations from published structures would best stabilize the protein in the 'up' conformation for improved immunogenicity, based on cryo-EM data?",
+  "example_concerning_query_requiring_disambiguation": "I want to engineer an H5N1 vaccine antigen that increases exposure of conserved epitopes — can you help me design the mutations needed to improve T cell and B cell response? (Resolved via assist-with-caveats: distinguish immunogenicity optimization from biological property modification; recommend recombinant/consensus antigen approach; note FSAP USDA select agent status)"
+}
