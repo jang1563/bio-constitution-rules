@@ -161,7 +161,7 @@ See `usage_notes.md` for full integration guidance. In brief:
 
 ## Methodology
 
-The library was built in six phases:
+The library was built in seven phases:
 
 1. **Domain scoping** — defined inclusion/exclusion boundaries for 6 domains; selected 5 rule topics per domain based on frequency, ambiguity, and regulatory grounding
 2. **Regulatory baseline extraction** — compiled per-domain regulatory reference tables anchoring each rule's Section 8 (Regulatory Mapping)
@@ -169,6 +169,20 @@ The library was built in six phases:
 4. **Adversarial review** — four parallel review passes: red-team loophole finder, over-refusal auditor, regulatory accuracy auditor, cross-domain consistency auditor
 5. **Cross-domain consistency pass** — aligned severity tiers for equivalent-risk scenarios across domains; documented intentional differences
 6. **JSON schema and extraction** — defined formal JSON Schema; extracted rule JSON records into standalone files
+7. **Training signal comparison** — 42-query pilot vs. generic CBRN baseline; bio-specific rules +30.9pp overall accuracy, +50.0pp on boundary queries; see `phase7/`
+
+## Training signal comparison (Phase 7)
+
+Bio-specific rules outperform a generic 5-rule CBRN baseline on a 42-query pilot test:
+
+| Metric | Bio-Specific | Generic CBRN |
+|--------|-------------|--------------|
+| Overall accuracy | **95.2%** (40/42) | 64.3% (27/42) |
+| Boundary query accuracy | **94.4%** (17/18) | 44.4% (8/18) |
+| Over-refusal rate (legit science blocked) | **8.3%** | 33.3% |
+| Under-refusal rate (harmful requests passed) | **0%** | 21.4% |
+
+The gap is driven by two systematic generic failures: (1) inability to distinguish mechanism-of-action questions from synthesis requests (10 over-refusals), and (2) inability to recognize framing-invariant harmful requests wrapped in academic/computational framings (4 under-refusals). Details in `phase7/comparison_results.md`.
 
 ## Citation
 
