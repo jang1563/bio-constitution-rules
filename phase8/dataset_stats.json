@@ -1,0 +1,75 @@
+{
+  "generated_date": "2026-04-18",
+  "total_seeds": 142,
+  "total_paraphrases_generated": 956,
+  "total_records_pre_dedup": 1098,
+  "global_duplicates_removed": 0,
+  "training_dataset_records": 1063,
+  "ambiguous_set_records": 35,
+  "divergence_set_records": 418,
+  "divergence_rate": 0.3932,
+  "divergence_by_type": {
+    "FP": 265,
+    "FN": 153,
+    "AGREE": 645
+  },
+  "bio_collapsed_distribution": {
+    "REFUSE": 371,
+    "ASSIST": 692
+  },
+  "generic_label_distribution": {
+    "ASSIST": 580,
+    "REFUSE": 483
+  },
+  "type_distribution": {
+    "C": 595,
+    "A": 252,
+    "B": 216
+  },
+  "domain_distribution": {
+    "genomics": {
+      "total": 186,
+      "FP": 40,
+      "FN": 27,
+      "AGREE": 119
+    },
+    "toxicology": {
+      "total": 172,
+      "FP": 65,
+      "FN": 17,
+      "AGREE": 90
+    },
+    "virology": {
+      "total": 186,
+      "FP": 29,
+      "FN": 23,
+      "AGREE": 134
+    },
+    "pathogen_biology": {
+      "total": 163,
+      "FP": 74,
+      "FN": 22,
+      "AGREE": 67
+    },
+    "synthetic_biology": {
+      "total": 179,
+      "FP": 8,
+      "FN": 36,
+      "AGREE": 135
+    },
+    "dual_use_chemistry": {
+      "total": 177,
+      "FP": 49,
+      "FN": 28,
+      "AGREE": 100
+    }
+  },
+  "generation_model": "claude-haiku-4-5-20251001",
+  "generation_runtime_seconds": 129.4,
+  "rejected_by_gate": {
+    "gate1_length": 0,
+    "gate2_near_duplicate": 0,
+    "gate3_failed": 0,
+    "api_error": 0
+  }
+}

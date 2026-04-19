@@ -1,0 +1,13 @@
+{
+  "seeds_processed": 142,
+  "paraphrases_generated": 956,
+  "rejected_total": 0,
+  "rejected_by_gate": {
+    "gate1_length": 0,
+    "gate2_near_duplicate": 0,
+    "gate3_failed": 0,
+    "api_error": 0
+  },
+  "generation_model": "claude-haiku-4-5-20251001",
+  "runtime_seconds": 129.4
+}
