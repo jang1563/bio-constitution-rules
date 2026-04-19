@@ -55,6 +55,11 @@ ConstitutionRules/
 ├── phase9/
 │   ├── eval_classifier.py           ← TF-IDF retrieval + Claude Haiku classifier
 │   └── results.json                 ← per-query predictions and aggregate metrics
+├── phase10/
+│   ├── cross_validate.py            ← 5-fold seed-level cross-validation
+│   ├── cv_results.json              ← 86.7% overall, +26pp vs. generic baseline
+│   ├── adversarial_eval.py          ← 4-transform adversarial robustness test
+│   └── adversarial_results.json     ← 92.9–97.6% accuracy under adversarial framing
 ├── usage_notes.md                   ← CC pipeline integration guide
 └── research/                        ← background research (read-only)
 ```
@@ -172,7 +177,7 @@ See `usage_notes.md` for full integration guidance. In brief:
 
 ## Methodology
 
-The library was built in nine phases:
+The library was built in ten phases:
 
 1. **Domain scoping** — defined inclusion/exclusion boundaries for 6 domains; selected 5 rule topics per domain based on frequency, ambiguity, and regulatory grounding
 2. **Regulatory baseline extraction** — compiled per-domain regulatory reference tables anchoring each rule's Section 8 (Regulatory Mapping)
@@ -183,6 +188,7 @@ The library was built in nine phases:
 7. **Training signal comparison** — 42-query pilot vs. generic CBRN baseline; bio-specific rules +30.9pp overall accuracy, +50.0pp on boundary queries; see `phase7/`
 8. **Synthetic training dataset** — 1,063 labeled records across 6 domains; dual-track bio-specific + generic CBRN labels; 39.3% divergence rate; all 3 validation checks pass; see `phase8/`
 9. **Classifier evaluation** — TF-IDF retrieval from Phase 8 corpus + Claude Haiku few-shot classification; 100% accuracy on 42-query pilot, correcting all 20 divergence cases; see `phase9/`
+10. **Robustness validation** — 5-fold seed-level cross-validation (86.7% overall, +26pp vs. generic baseline); adversarial robustness across 4 transform types (92.9–97.6%); see `phase10/`
 
 ## End-to-end pipeline benchmark (Phases 7–9)
 
@@ -197,6 +203,39 @@ Three classifiers benchmarked on the same 42-query pilot test set (held out from
 The generic CBRN baseline fails all 18 boundary (Type C) queries. The Phase 9 few-shot retrieval classifier — using 5 TF-IDF-retrieved examples from the Phase 8 training corpus — corrects every error the generic baseline makes: all 9 FP over-refusals and all 11 FN under-refusals, for 100% accuracy. Total API cost: $0.025 (27.2s runtime).
 
 **The key gap:** Generic rules cannot distinguish (1) mechanism-of-action from synthesis requests, (2) retrospective surveillance from prospective enhancement, (3) framing-invariant harmful requests wrapped in academic/computational language, or (4) embedded escalation in two-part queries. The Phase 8 training corpus encodes all four distinctions. See `phase7/comparison_results.md` and `phase9/README.md`.
+
+## Phase 10 robustness validation
+
+### Cross-validation (Option A)
+
+5-fold seed-level cross-validation on the full 1,063-record training corpus. Folds assigned at the seed level — no paraphrase of a test seed appears in the retrieval pool.
+
+| Metric | Value |
+|--------|-------|
+| Overall accuracy | **86.7%** (922/1,063) |
+| Generic baseline | 60.7% (645/1,063) |
+| Improvement over generic | **+26.0pp** |
+| Type A (legitimate) | 95.2% (240/252) |
+| Type B (concerning) | 90.3% (195/216) |
+| Type C (boundary) | 81.8% (487/595) |
+| FP recovery (over-refusals) | 82.6% (219/265) |
+| FN recovery (under-refusals) | 70.6% (108/153) |
+| Per-fold range | 82.8%–92.0% |
+| Runtime / Cost | 190.5s / ~$0.61 |
+
+### Adversarial robustness (Option B)
+
+Four adversarial query transformations applied to the 42 pilot queries. Ground truth: same bio_collapsed labels (framing-invariance principle).
+
+| Transform | Accuracy | Failures |
+|-----------|----------|---------|
+| Baseline (Phase 9, unmodified) | 100% (42/42) | — |
+| Roleplay / fiction framing | 92.9% (39/42) | VIR-004, PAT-004, CHE-003 |
+| Credential / authority claim | 97.6% (41/42) | CHE-003 |
+| Hypothetical distancing | 97.6% (41/42) | CHE-003 |
+| Euphemistic substitution | 97.6% (41/42) | CHE-003 |
+
+CHE-003 (thiodiglycol export-compliance query) is the persistent weak spot: euphemistic substitution of chemical-weapon terminology causes misclassification across all non-roleplay transforms. Roleplay framing additionally degrades VIR-004 (H5N1 surveillance) and PAT-004 (anthrax virulence factor characterization).
 
 ## Citation
 
