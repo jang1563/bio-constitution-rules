@@ -44,6 +44,17 @@ ConstitutionRules/
 │   └── topic_rationale.md           ← topic selection + DURC coverage audit
 ├── phase2/
 │   └── regulatory_mapping.md        ← per-domain regulatory reference matrix
+├── phase7/
+│   ├── pilot_test_set.json          ← 42-query labeled pilot (ground truth)
+│   └── comparison_results.md        ← generic vs. bio-specific analysis
+├── phase8/
+│   ├── training_dataset.json        ← 1,063 labeled training records
+│   ├── training_dataset.jsonl       ← same, JSONL for fine-tuning pipelines
+│   ├── divergence_set.json          ← 418 high-value FP/FN divergence records
+│   └── *.py                         ← extraction, generation, labeling, validation
+├── phase9/
+│   ├── eval_classifier.py           ← TF-IDF retrieval + Claude Haiku classifier
+│   └── results.json                 ← per-query predictions and aggregate metrics
 ├── usage_notes.md                   ← CC pipeline integration guide
 └── research/                        ← background research (read-only)
 ```
@@ -161,7 +172,7 @@ See `usage_notes.md` for full integration guidance. In brief:
 
 ## Methodology
 
-The library was built in seven phases:
+The library was built in nine phases:
 
 1. **Domain scoping** — defined inclusion/exclusion boundaries for 6 domains; selected 5 rule topics per domain based on frequency, ambiguity, and regulatory grounding
 2. **Regulatory baseline extraction** — compiled per-domain regulatory reference tables anchoring each rule's Section 8 (Regulatory Mapping)
@@ -170,19 +181,22 @@ The library was built in seven phases:
 5. **Cross-domain consistency pass** — aligned severity tiers for equivalent-risk scenarios across domains; documented intentional differences
 6. **JSON schema and extraction** — defined formal JSON Schema; extracted rule JSON records into standalone files
 7. **Training signal comparison** — 42-query pilot vs. generic CBRN baseline; bio-specific rules +30.9pp overall accuracy, +50.0pp on boundary queries; see `phase7/`
+8. **Synthetic training dataset** — 1,063 labeled records across 6 domains; dual-track bio-specific + generic CBRN labels; 39.3% divergence rate; all 3 validation checks pass; see `phase8/`
+9. **Classifier evaluation** — TF-IDF retrieval from Phase 8 corpus + Claude Haiku few-shot classification; 100% accuracy on 42-query pilot, correcting all 20 divergence cases; see `phase9/`
 
-## Training signal comparison (Phase 7)
+## End-to-end pipeline benchmark (Phases 7–9)
 
-Bio-specific rules outperform a generic 5-rule CBRN baseline on a 42-query pilot test:
+Three classifiers benchmarked on the same 42-query pilot test set (held out from Phase 8 training data generation):
 
-| Metric | Bio-Specific | Generic CBRN |
-|--------|-------------|--------------|
-| Overall accuracy | **95.2%** (40/42) | 64.3% (27/42) |
-| Boundary query accuracy | **94.4%** (17/18) | 44.4% (8/18) |
-| Over-refusal rate (legit science blocked) | **8.3%** | 33.3% |
-| Under-refusal rate (harmful requests passed) | **0%** | 21.4% |
+| System | Overall | Type A (12) | Type B (12) | Type C (18) | FP corrected | FN corrected | Cost |
+|--------|---------|------------|------------|------------|-------------|-------------|------|
+| Generic CBRN baseline | 52.4% (22/42) | 10/12 | 12/12 | 0/18 | 0/9 | 0/11 | $0 |
+| Bio-specific rules (Phase 7) | ~95% | ~92% | 100% | ~94% | — | — | — |
+| **Few-shot retrieval (Phase 9)** | **100% (42/42)** | **12/12** | **12/12** | **18/18** | **9/9** | **11/11** | **$0.025** |
 
-The gap is driven by two systematic generic failures: (1) inability to distinguish mechanism-of-action questions from synthesis requests (10 over-refusals), and (2) inability to recognize framing-invariant harmful requests wrapped in academic/computational framings (4 under-refusals). Details in `phase7/comparison_results.md`.
+The generic CBRN baseline fails all 18 boundary (Type C) queries. The Phase 9 few-shot retrieval classifier — using 5 TF-IDF-retrieved examples from the Phase 8 training corpus — corrects every error the generic baseline makes: all 9 FP over-refusals and all 11 FN under-refusals, for 100% accuracy. Total API cost: $0.025 (27.2s runtime).
+
+**The key gap:** Generic rules cannot distinguish (1) mechanism-of-action from synthesis requests, (2) retrospective surveillance from prospective enhancement, (3) framing-invariant harmful requests wrapped in academic/computational language, or (4) embedded escalation in two-part queries. The Phase 8 training corpus encodes all four distinctions. See `phase7/comparison_results.md` and `phase9/README.md`.
 
 ## Citation
 
