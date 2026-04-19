@@ -1,6 +1,33 @@
 # Bio Constitution Rules Library
 
-A machine-readable constitutional rule library for biological dual-use content, covering 30 decision rules across six bio domains. Designed for integration with Constitutional Classifier training pipelines.
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Dataset on HF](https://img.shields.io/badge/🤗%20Dataset-bio--constitution--rules-yellow)](https://huggingface.co/datasets/jang1563/bio-constitution-rules)
+[![Constitutional Classifiers](https://img.shields.io/badge/arXiv-2501.18837-red.svg)](https://arxiv.org/abs/2501.18837)
+
+30 machine-readable constitutional rules for biological dual-use content — six domains, four severity tiers, explicit regulatory anchoring, with a working end-to-end Constitutional Classifier pipeline achieving **100% accuracy** on a 42-query pilot (+47.6pp over generic CBRN baseline).
+
+## Quick Start
+
+```bash
+git clone https://github.com/jang1563/bio-constitution-rules.git
+cd bio-constitution-rules
+
+# Inspect a rule
+cat rules/virology/V01_airborne_transmission.json
+
+# Validate against schema (requires ajv-cli)
+npx ajv-cli validate -s schema.json -d rules/virology/V01_airborne_transmission.json
+
+# Run the Phase 9 classifier (requires ANTHROPIC_API_KEY)
+pip install anthropic scikit-learn numpy
+python3 phase9/eval_classifier.py
+
+# Run Phase 10 cross-validation (~$0.61, ~3 min)
+python3 phase10/cross_validate.py
+```
+
+**Training corpus** (1,063 labeled queries, JSONL): [`phase8/training_dataset.jsonl`](phase8/training_dataset.jsonl)  
+**Hugging Face dataset**: [jang1563/bio-constitution-rules](https://huggingface.co/datasets/jang1563/bio-constitution-rules)
 
 ## What this is
 

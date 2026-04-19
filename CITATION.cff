@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this library in research or training pipeline development, please cite it as below."
+type: dataset
+title: "Bio Constitution Rules Library"
+abstract: >
+  30 machine-readable constitutional rules for biological dual-use content
+  across six domains (virology, toxicology, synthetic biology, genomics,
+  pathogen biology, dual-use chemistry). Each rule includes biological
+  reasoning, edge cases with resolutions, a four-tier severity system, and
+  explicit regulatory mapping to NSABB DURC, FSAP, BWC/CWC, Australia Group,
+  and WHO Laboratory Biosafety Manual frameworks. Accompanied by a 1,063-record
+  synthetic training corpus and end-to-end Constitutional Classifier evaluation
+  achieving 100% accuracy on a 42-query pilot (+47.6pp over generic CBRN baseline).
+authors:
+  - family-names: Jang
+    given-names: Juho
+    orcid: ""
+version: "1.0.0"
+date-released: "2026-04-19"
+license: Apache-2.0
+repository-code: "https://github.com/jang1563/bio-constitution-rules"
+url: "https://huggingface.co/datasets/jang1563/bio-constitution-rules"
+keywords:
+  - biosafety
+  - constitutional-ai
+  - dual-use research
+  - content moderation
+  - biological weapons
+  - responsible AI
+  - constitutional classifiers
+  - CBRN
+  - training data
+references:
+  - type: article
+    title: "Constitutional Classifiers: Defending Against Universal Jailbreaks Across Thousands of Hours of Red-Teaming"
+    authors:
+      - family-names: "Anthropic"
+    year: 2025
+    url: "https://arxiv.org/abs/2501.18837"
