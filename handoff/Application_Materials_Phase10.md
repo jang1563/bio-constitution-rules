@@ -11,6 +11,7 @@ Updated after Phase 10 completion (2026-04-19). Use these to update CV and cover
 **Bio Constitution Rules Library** (Apr 2026) — [github.com/jang1563/bio-constitution-rules](https://github.com/jang1563/bio-constitution-rules)
 - Authored 30 machine-readable constitutional rules across 6 bio domains (virology, toxicology, synthetic biology, genomics, pathogen biology, dual-use chemistry), each with biological reasoning, 3 edge cases, resolving-context table, 4-tier severity tier, and explicit regulatory mapping (NSABB DURC, FSAP, BWC/CWC, Australia Group, WHO LBM 4th ed.)
 - Built end-to-end Constitutional Classifier pipeline: 1,063-record synthetic training corpus → TF-IDF retrieval → Claude Haiku few-shot classifier → **100% accuracy** on 42-query pilot, correcting all 9 FP over-refusals and 11 FN under-refusals vs. 52.4% generic CBRN baseline (+47.6pp)
+- Fine-tuned `gpt-4o-mini` on the same corpus: **97.6% accuracy** (41/42) with zero retrieval context, recovering 9/9 FP and 10/11 FN — confirming the bio-specific signal transfers to model weights, not just retrieval
 - Validated generalization via 5-fold seed-level cross-validation: **86.7% overall** (922/1,063), +26pp over generic baseline; adversarial robustness testing across 4 transform types (roleplay, authority claim, hypothetical distancing, euphemistic substitution): **92.9–97.6% accuracy** under adversarial framing
 - JSON format ready for Constitutional Classifier pipeline ingestion; Apache 2.0 license
 
@@ -84,6 +85,9 @@ A: (1) Human expert review of the 418 divergence-set records — the highest-val
 | FN corrected | 11/11 (100%) |
 | 5-fold CV accuracy (Phase 10A) | 86.7% (922/1,063), +26pp vs. generic |
 | Adversarial accuracy (Phase 10B) | 92.9–97.6% across 4 transform types |
-| Total API cost (Phases 7–10) | ~$0.75 |
+| Fine-tuned gpt-4o-mini (Phase 10D) | 97.6% (41/42), zero retrieval context |
+| FP recovered (fine-tuned) | 9/9 (100%) |
+| FN recovered (fine-tuned) | 10/11 (91%) |
+| Total API cost (Phases 7–10) | ~$2.75 (~$2 fine-tune + ~$0.75 evals) |
 | GitHub | github.com/jang1563/bio-constitution-rules |
 | License | Apache 2.0 |

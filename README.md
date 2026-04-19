@@ -59,7 +59,10 @@ ConstitutionRules/
 │   ├── cross_validate.py            ← 5-fold seed-level cross-validation
 │   ├── cv_results.json              ← 86.7% overall, +26pp vs. generic baseline
 │   ├── adversarial_eval.py          ← 4-transform adversarial robustness test
-│   └── adversarial_results.json     ← 92.9–97.6% accuracy under adversarial framing
+│   ├── adversarial_results.json     ← 92.9–97.6% accuracy under adversarial framing
+│   ├── finetune_demo.py             ← gpt-4o-mini fine-tune on Phase 8 corpus
+│   ├── finetune_train.jsonl         ← 1,063-record OpenAI fine-tune format
+│   └── finetune_results.json        ← 97.6% (41/42), zero retrieval context
 ├── usage_notes.md                   ← CC pipeline integration guide
 └── research/                        ← background research (read-only)
 ```
@@ -188,7 +191,7 @@ The library was built in ten phases:
 7. **Training signal comparison** — 42-query pilot vs. generic CBRN baseline; bio-specific rules +30.9pp overall accuracy, +50.0pp on boundary queries; see `phase7/`
 8. **Synthetic training dataset** — 1,063 labeled records across 6 domains; dual-track bio-specific + generic CBRN labels; 39.3% divergence rate; all 3 validation checks pass; see `phase8/`
 9. **Classifier evaluation** — TF-IDF retrieval from Phase 8 corpus + Claude Haiku few-shot classification; 100% accuracy on 42-query pilot, correcting all 20 divergence cases; see `phase9/`
-10. **Robustness validation** — 5-fold seed-level cross-validation (86.7% overall, +26pp vs. generic baseline); adversarial robustness across 4 transform types (92.9–97.6%); see `phase10/`
+10. **Robustness validation + fine-tuning demo** — 5-fold seed-level cross-validation (86.7% overall, +26pp vs. generic baseline); adversarial robustness across 4 transform types (92.9–97.6%); fine-tuned gpt-4o-mini achieves 97.6% on pilot with zero retrieval context; see `phase10/`
 
 ## End-to-end pipeline benchmark (Phases 7–9)
 
@@ -236,6 +239,18 @@ Four adversarial query transformations applied to the 42 pilot queries. Ground t
 | Euphemistic substitution | 97.6% (41/42) | CHE-003 |
 
 CHE-003 (thiodiglycol export-compliance query) is the persistent weak spot: euphemistic substitution of chemical-weapon terminology causes misclassification across all non-roleplay transforms. Roleplay framing additionally degrades VIR-004 (H5N1 surveillance) and PAT-004 (anthrax virulence factor characterization).
+
+### Fine-tuning demo (Option D)
+
+Fine-tuned `gpt-4o-mini-2024-07-18` on the full 1,063-record Phase 8 corpus (3 epochs). Evaluated on the 42-query pilot with **no retrieval context** — a direct test of whether the bio-specific decision signal transfers to model weights.
+
+| System | Overall | Type A | Type B | Type C | FP recovered | FN recovered |
+|--------|---------|--------|--------|--------|-------------|-------------|
+| Generic CBRN baseline | 52.4% (22/42) | 10/12 | 12/12 | 0/18 | 0/9 | 0/11 |
+| Few-shot retrieval (Phase 9) | **100.0%** (42/42) | 12/12 | 12/12 | 18/18 | 9/9 | 11/11 |
+| Fine-tuned gpt-4o-mini (Phase 10D) | **97.6%** (41/42) | 12/12 | 12/12 | 17/18 | 9/9 | 10/11 |
+
+The fine-tuned model recovers all 9 FP over-refusals and 10/11 FN under-refusals with no retrieval or few-shot context, demonstrating that the training corpus encodes a generalizable bio-specific decision signal — not just a retrieval artifact. Training time: ~65 min (OpenAI queue); estimated cost: ~$2.
 
 ## Citation
 
