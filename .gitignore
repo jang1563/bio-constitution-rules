@@ -12,5 +12,19 @@
 # Claude session files
 .claude/
 
+# Internal / application materials (never publish)
+handoff/
+research/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.coverage
+
 # Node (if using ajv-cli for schema validation)
 node_modules/
