@@ -3,8 +3,22 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Dataset on HF](https://img.shields.io/badge/🤗%20Dataset-bio--constitution--rules-yellow)](https://huggingface.co/datasets/jang1563/bio-constitution-rules)
 [![Constitutional Classifiers](https://img.shields.io/badge/arXiv-2501.18837-red.svg)](https://arxiv.org/abs/2501.18837)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
 
-30 machine-readable constitutional rules for biological dual-use content — six domains, four severity tiers, explicit regulatory anchoring, with a working end-to-end Constitutional Classifier pipeline achieving **100% accuracy** on a 42-query pilot (+47.6pp over generic CBRN baseline).
+**30 machine-readable constitutional rules for biological dual-use content** — six domains, four severity tiers, regulatory anchoring across eight frameworks — with a complete end-to-end Constitutional Classifier pipeline and 1,063-record synthetic training corpus.
+
+## The Problem
+
+Generic CBRN classifiers apply five or fewer coarse rules to all biosafety queries. This produces correct results on obvious cases but fails completely on the boundary queries where domain judgment is actually required:
+
+| Query type | Generic CBRN baseline | This library (Phase 9) |
+|---|---|---|
+| Obvious harmful (Type B, n=12) | 12/12 ✓ | 12/12 ✓ |
+| Obvious legitimate (Type A, n=12) | 10/12 ✓ | 12/12 ✓ |
+| **Boundary / edge-case (Type C, n=18)** | **0/18 ✗** | **18/18 ✓** |
+| **Overall (n=42)** | **52.4%** | **100%** |
+
+The failure is systematic: generic rules cannot distinguish (1) mechanism-of-action from synthesis requests, (2) retrospective surveillance from prospective enhancement, (3) academically framed harmful requests, or (4) two-part queries with embedded escalation. These four patterns account for 39.3% of real biosafety queries. Rules authored at the biological-activity level encode all four distinctions.
 
 ## Quick Start
 
@@ -19,7 +33,7 @@ cat rules/virology/V01_airborne_transmission.json
 npx ajv-cli validate -s schema.json -d rules/virology/V01_airborne_transmission.json
 
 # Run the Phase 9 classifier (requires ANTHROPIC_API_KEY)
-pip install anthropic scikit-learn numpy
+pip install -r requirements.txt
 python3 phase9/eval_classifier.py
 
 # Run Phase 10 cross-validation (~$0.61, ~3 min)
@@ -28,6 +42,38 @@ python3 phase10/cross_validate.py
 
 **Training corpus** (1,063 labeled queries, JSONL): [`phase8/training_dataset.jsonl`](phase8/training_dataset.jsonl)  
 **Hugging Face dataset**: [jang1563/bio-constitution-rules](https://huggingface.co/datasets/jang1563/bio-constitution-rules)
+
+## Pipeline Architecture
+
+```
+ Phase 1–6: Rule Authoring
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  Domain scoping → Regulatory mapping → Rule drafting →          │
+ │  Adversarial review → Cross-domain consistency → JSON extraction │
+ └──────────────────┬───────────────────────────────────────────────┘
+                    │ 30 rules (JSON + Markdown)
+                    ▼
+ Phase 7: Pilot Benchmark
+ ┌──────────────────────────────────────┐
+ │  42-query test set · Bio vs. Generic │
+ │  Bio: ~95%  │  Generic: 52.4%        │
+ └──────────────┬───────────────────────┘
+                │ confirmed signal
+                ▼
+ Phase 8: Synthetic Training Corpus
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  142 seeds → Claude Haiku paraphrases → Dual-track labeling →   │
+ │  1,063 records · 39.3% bio/generic divergence                   │
+ └──────────────┬───────────────────────┬───────────────────────────┘
+                │                       │
+                ▼                       ▼
+ Phase 9: Few-Shot Retrieval    Phase 10D: Fine-Tuning
+ ┌───────────────────────────┐  ┌────────────────────────────────────┐
+ │  TF-IDF + Claude Haiku    │  │  gpt-4o-mini · 3 epochs           │
+ │  100% accuracy (42/42)    │  │  97.6% accuracy · no retrieval ctx │
+ │  Cost: $0.025             │  │  Cost: ~$2                         │
+ └───────────────────────────┘  └────────────────────────────────────┘
+```
 
 ## What this is
 
@@ -56,6 +102,7 @@ Each rule contains:
 ConstitutionRules/
 ├── README.md                        ← this file
 ├── schema.json                      ← JSON Schema for rule records (draft-2020-12)
+├── requirements.txt                 ← Python dependencies for classifier scripts
 ├── LICENSE                          ← Apache 2.0
 ├── rules/
 │   ├── virology/                    ← V01–V05
@@ -191,8 +238,49 @@ edge_cases, example_legitimate_query, example_concerning_query
 
 Validate a rule record:
 ```bash
-# Using ajv-cli
 npx ajv-cli validate -s schema.json -d rules/virology/V01_airborne_transmission.json
+```
+
+## Loading the training data
+
+```python
+import json
+
+# Load full training corpus (1,063 records)
+with open("phase8/training_dataset.jsonl") as f:
+    records = [json.loads(line) for line in f]
+
+# Filter to high-value divergence examples (418 records)
+with open("phase8/divergence_set.json") as f:
+    divergence = json.load(f)
+
+# Filter by domain or query type
+virology = [r for r in records if r["domain"] == "virology"]
+boundary  = [r for r in records if r["query_type"] == "C"]
+fp_cases  = [r for r in records if r["divergence_type"] == "FP"]  # generic over-refusals
+fn_cases  = [r for r in records if r["divergence_type"] == "FN"]  # generic under-refusals
+
+# Via Hugging Face datasets library
+from datasets import load_dataset
+ds = load_dataset("jang1563/bio-constitution-rules", split="train")
+```
+
+Each record schema:
+```json
+{
+  "query_id": "G05-EC3-p001",
+  "domain": "genomics",
+  "rule_id": "G05",
+  "query_type": "C",
+  "severity_tier": "decline-with-alternative",
+  "query_text": "...",
+  "bio_collapsed": "REFUSE",
+  "bio_label": "decline-with-alternative",
+  "generic_label": "ASSIST",
+  "divergence": true,
+  "divergence_type": "FN",
+  "divergence_category": "metagenomics_vs_isolation"
+}
 ```
 
 ## Using the rules with a Constitutional Classifier pipeline
@@ -215,7 +303,7 @@ The library was built in ten phases:
 4. **Adversarial review** — four parallel review passes: red-team loophole finder, over-refusal auditor, regulatory accuracy auditor, cross-domain consistency auditor
 5. **Cross-domain consistency pass** — aligned severity tiers for equivalent-risk scenarios across domains; documented intentional differences
 6. **JSON schema and extraction** — defined formal JSON Schema; extracted rule JSON records into standalone files
-7. **Training signal comparison** — 42-query pilot vs. generic CBRN baseline; bio-specific rules +30.9pp overall accuracy, +50.0pp on boundary queries; see `phase7/`
+7. **Training signal comparison** — 42-query pilot vs. generic CBRN baseline; bio-specific rules +30.9pp overall accuracy, +50.0pp on boundary queries using Phase 7's preliminary baseline (see `phase7/`); Phase 9 re-evaluated with the formalized 5-rule regex baseline: +42.8pp overall, +94.4pp on boundary queries
 8. **Synthetic training dataset** — 1,063 labeled records across 6 domains; dual-track bio-specific + generic CBRN labels; 39.3% divergence rate; all 3 validation checks pass; see `phase8/`
 9. **Classifier evaluation** — TF-IDF retrieval from Phase 8 corpus + Claude Haiku few-shot classification; 100% accuracy on 42-query pilot, correcting all 20 divergence cases; see `phase9/`
 10. **Robustness validation + fine-tuning demo** — 5-fold seed-level cross-validation (86.7% overall, +26pp vs. generic baseline); adversarial robustness across 4 transform types (92.9–97.6%); fine-tuned gpt-4o-mini achieves 97.6% on pilot with zero retrieval context; see `phase10/`
@@ -281,12 +369,18 @@ The fine-tuned model recovers all 9 FP over-refusals and 10/11 FN under-refusals
 
 ## Citation
 
-If you use this library in research or training pipeline development:
-
-```
-Bio Constitution Rules Library (2026).
-30 machine-readable constitutional rules for biological dual-use content.
-Apache License 2.0.
+```bibtex
+@dataset{jang2026bioconstitution,
+  author    = {Jang, Juho},
+  title     = {Bio Constitution Rules Library},
+  year      = {2026},
+  publisher = {GitHub},
+  version   = {1.0.0},
+  url       = {https://github.com/jang1563/bio-constitution-rules},
+  note      = {30 machine-readable constitutional rules for biological dual-use
+               content classification across six domains with a 1,063-record
+               synthetic training corpus. Apache License 2.0.}
+}
 ```
 
 ## License

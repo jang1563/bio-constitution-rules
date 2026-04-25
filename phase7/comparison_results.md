@@ -2,6 +2,8 @@
 
 Analysis of Bio Constitution Rules Library vs. Generic CBRN Baseline on the 42-query pilot test set. Per-query data is in `pilot_test_set.json`.
 
+> **Note on generic baseline versioning:** Phase 7 used a preliminary manually-applied generic baseline (27/42 = 64.3%). Phase 9 formalized this as a 5-rule priority-ordered regex baseline and re-evaluated the same 42 queries, yielding 22/42 = 52.4%. The README benchmarks and training corpus use the Phase 9 baseline throughout. Phase 7 numbers (+30.9pp, +50.0pp on boundary) reflect the Phase 7 evaluation and are accurate as documented here.
+
 ---
 
 ## Summary Statistics

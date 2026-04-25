@@ -93,7 +93,7 @@ Validates that the Phase 9 retrieval classifier generalizes beyond the 42-query 
 
 **Interpretation:** 97.6% with zero retrieval context confirms the training corpus encodes a genuine, transferable bio-specific decision signal. The 2.4pp gap vs. the few-shot retrieval classifier (one missed boundary query) reflects expected fine-tuning variance on a small eval set. Full production fine-tuning would benefit from human expert review of the 418-record divergence set before training.
 
-- **Fine-tuned model ID:** `ft:gpt-4o-mini-2024-07-18:spacecell::DWUM6g7C`
+- **Fine-tuned model ID:** `ft:gpt-4o-mini-2024-07-18:[org]::DWUM6g7C`
 - **Training time:** ~65 min (OpenAI queue) | **Cost:** ~$2.00
 
 ---

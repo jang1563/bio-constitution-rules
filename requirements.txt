@@ -1,0 +1,10 @@
+# Phase 9: Few-shot retrieval classifier
+anthropic>=0.40.0
+scikit-learn>=1.3.0
+numpy>=1.24.0
+
+# Phase 10: Robustness validation and fine-tuning
+openai>=1.50.0
+
+# Optional: Hugging Face datasets library for loading training corpus
+# datasets>=2.18.0

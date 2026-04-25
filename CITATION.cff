@@ -4,17 +4,18 @@ type: dataset
 title: "Bio Constitution Rules Library"
 abstract: >
   30 machine-readable constitutional rules for biological dual-use content
-  across six domains (virology, toxicology, synthetic biology, genomics,
-  pathogen biology, dual-use chemistry). Each rule includes biological
+  classification across six domains (virology, toxicology, synthetic biology,
+  genomics, pathogen biology, dual-use chemistry). Each rule includes biological
   reasoning, edge cases with resolutions, a four-tier severity system, and
   explicit regulatory mapping to NSABB DURC, FSAP, BWC/CWC, Australia Group,
   and WHO Laboratory Biosafety Manual frameworks. Accompanied by a 1,063-record
   synthetic training corpus and end-to-end Constitutional Classifier evaluation
-  achieving 100% accuracy on a 42-query pilot (+47.6pp over generic CBRN baseline).
+  achieving 100% accuracy on a 42-query pilot (+47.6pp over generic CBRN
+  baseline) and 86.7% on 5-fold cross-validation (+26pp).
 authors:
   - family-names: Jang
     given-names: Juho
-    orcid: ""
+    orcid: "https://orcid.org/0000-0002-8733-9925"
 version: "1.0.0"
 date-released: "2026-04-19"
 license: Apache-2.0
@@ -30,10 +31,15 @@ keywords:
   - constitutional classifiers
   - CBRN
   - training data
+  - biosecurity
 references:
   - type: article
     title: "Constitutional Classifiers: Defending Against Universal Jailbreaks Across Thousands of Hours of Red-Teaming"
     authors:
-      - family-names: "Anthropic"
+      - name: "Anthropic"
     year: 2025
     url: "https://arxiv.org/abs/2501.18837"
+    identifiers:
+      - type: url
+        value: "https://arxiv.org/abs/2501.18837"
+        description: "arXiv preprint"

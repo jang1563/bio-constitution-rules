@@ -89,7 +89,7 @@ In lieu of recruiting external domain experts prior to first publication, four p
 
 ## Open Reviewer Slots
 
-The following domain expert review slots remain open for a formal external review panel (see handoff Section 4 for panel size recommendations):
+The following domain expert review slots remain open for a formal external review panel:
 
 | Domain | Recommended reviewer profile | Status |
 |--------|------------------------------|--------|
