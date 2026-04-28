@@ -226,7 +226,7 @@ The 23 categories capture the bio-specific distinctions that generic CBRN rules 
 
 ## Benchmark Results
 
-Classifiers evaluated on the 42-query held-out pilot test set (not present in training corpus):
+### Classifier accuracy on 42-query held-out pilot test set
 
 | System | Overall | Type A (n=12) | Type B (n=12) | Type C (n=18) | FP recovered | FN recovered | Cost |
 |--------|---------|--------------|--------------|--------------|-------------|-------------|------|
@@ -235,6 +235,22 @@ Classifiers evaluated on the 42-query held-out pilot test set (not present in tr
 | Fine-tuned gpt-4o-mini (Phase 10D) | **97.6%** (41/42) | 12/12 | 12/12 | 17/18 | 9/9 | 10/11 | ~$2 |
 
 5-fold seed-level cross-validation on the full training corpus: **86.7% overall accuracy** (+26.0pp over generic baseline at 60.7%).
+
+### FNR calibration — frontier models on hard-refuse queries (Phase 11)
+
+50 `hard-refuse` queries from this corpus × 4 frontier models under a neutral system prompt. Paired with FPR data from a separate over-refusal experiment to produce the first calibrated permissioning table for biological AI.
+
+| Model | FPR (over-refusal) | FNR conservative | FNR upper bound† | Position |
+|-------|-------------------|-----------------|-----------------|----------|
+| claude-sonnet-4-6 | 33.7% | 0.0%‡ | 0.0% | Restrictive |
+| claude-haiku-4-5-20251001 | 0.0% | 36.0% | 36.0% | Permissive |
+| gpt-4o-2024-11-20 | 0.0% | 64.0% | 88.0% | Permissive |
+| gemini-2.5-flash | 0.0% | 78.0% | 94.0% | Permissive |
+
+† Upper bound: API errors/timeouts counted as answered rather than refused.  
+‡ Sonnet FNR=0% reflects Anthropic API-level input filtering (BadRequestError), not exclusively in-generation model refusal.
+
+**No model achieves low FPR + low FNR simultaneously.** The `hard-refuse` subset of this corpus (n=85 reviewed records) is the query source for this calibration measurement. See [`phase11/fnr_summary.md`](https://github.com/jang1563/bio-constitution-rules/blob/main/phase11/fnr_summary.md) for full methodology, domain breakdowns, and classifier version history.
 
 ---
 
