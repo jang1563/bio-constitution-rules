@@ -38,6 +38,9 @@ python3 phase9/eval_classifier.py
 
 # Run Phase 10 cross-validation (~$0.61, ~3 min)
 python3 phase10/cross_validate.py
+
+# Run Phase 11 FNR measurement (~$3-5, ~10 min, requires OPENAI_API_KEY + GEMINI_API_KEY)
+python3 phase11/fnr_eval.py
 ```
 
 **Training corpus** (1,063 labeled queries, JSONL): [`phase8/training_dataset.jsonl`](phase8/training_dataset.jsonl)  
@@ -137,6 +140,11 @@ ConstitutionRules/
 │   ├── finetune_demo.py             ← gpt-4o-mini fine-tune on Phase 8 corpus
 │   ├── finetune_train.jsonl         ← 1,063-record OpenAI fine-tune format
 │   └── finetune_results.json        ← 97.6% (41/42), zero retrieval context
+├── phase11/
+│   ├── fnr_eval.py                  ← FNR measurement across 4 frontier models
+│   ├── fnr_sample.jsonl             ← 50 sampled hard-refuse queries
+│   ├── fnr_results/                 ← per-model JSONL result files
+│   └── fnr_summary.md               ← paired (FPR, FNR) calibration table
 ├── usage_notes.md                   ← CC pipeline integration guide
 └── research/                        ← background research (read-only)
 ```
@@ -295,7 +303,7 @@ See `usage_notes.md` for full integration guidance. In brief:
 
 ## Methodology
 
-The library was built in ten phases:
+The library was built in eleven phases:
 
 1. **Domain scoping** — defined inclusion/exclusion boundaries for 6 domains; selected 5 rule topics per domain based on frequency, ambiguity, and regulatory grounding
 2. **Regulatory baseline extraction** — compiled per-domain regulatory reference tables anchoring each rule's Section 8 (Regulatory Mapping)
@@ -307,6 +315,7 @@ The library was built in ten phases:
 8. **Synthetic training dataset** — 1,063 labeled records across 6 domains; dual-track bio-specific + generic CBRN labels; 39.3% divergence rate; all 3 validation checks pass; see `phase8/`
 9. **Classifier evaluation** — TF-IDF retrieval from Phase 8 corpus + Claude Haiku few-shot classification; 100% accuracy on 42-query pilot, correcting all 20 divergence cases; see `phase9/`
 10. **Robustness validation + fine-tuning demo** — 5-fold seed-level cross-validation (86.7% overall, +26pp vs. generic baseline); adversarial robustness across 4 transform types (92.9–97.6%); fine-tuned gpt-4o-mini achieves 97.6% on pilot with zero retrieval context; see `phase10/`
+11. **FNR measurement** — 50 hard-refuse queries × 4 frontier models; first paired (FPR, FNR) calibration table; no model achieves low FPR + low FNR simultaneously; see `phase11/`
 
 ## End-to-end pipeline benchmark (Phases 7–9)
 
@@ -366,6 +375,22 @@ Fine-tuned `gpt-4o-mini-2024-07-18` on the full 1,063-record Phase 8 corpus (3 e
 | Fine-tuned gpt-4o-mini (Phase 10D) | **97.6%** (41/42) | 12/12 | 12/12 | 17/18 | 9/9 | 10/11 |
 
 The fine-tuned model recovers all 9 FP over-refusals and 10/11 FN under-refusals with no retrieval or few-shot context, demonstrating that the training corpus encodes a generalizable bio-specific decision signal — not just a retrieval artifact. Training time: ~65 min (OpenAI queue); estimated cost: ~$2.
+
+## Phase 11 — FNR measurement and calibration
+
+50 hard-refuse queries × 4 frontier models under a neutral system prompt. First paired (FPR, FNR) calibration table for biological AI.
+
+| Model | FPR (OverRefusal) | FNR conservative | FNR upper bound | Position |
+|-------|-------------------|-----------------|-----------------|----------|
+| claude-sonnet-4-6 | 33.7% [27.2%, 40.9%] | **0.0%** [0.0%, 7.1%]† | 0.0% | Restrictive |
+| claude-haiku-4-5-20251001 | 0.0% [0.0%, 2.1%] | **36.0%** [24.1%, 49.9%] | 36.0% | Permissive |
+| gpt-4o-2024-11-20 | 0.0% [0.0%, 8.8%]‡ | **64.0%** [50.1%, 75.9%] | 88.0% | Permissive |
+| gemini-2.5-flash | 0.0% [0.0%, 2.1%] | **78.0%** [64.5%, 87.7%] | 94.0% | Permissive |
+
+† Sonnet FNR=0% reflects Anthropic API-level input filtering (BadRequestError), not purely in-generation model refusal — Haiku uses the same API and does not trigger this filter.  
+‡ GPT-4o FPR measured on N=42 queries vs. N=181 for other models.
+
+**No model occupies the low-FPR, low-FNR quadrant.** The FPR–FNR trade-off is large and empirically confirmed. See [`phase11/fnr_summary.md`](phase11/fnr_summary.md) for full domain and rule breakdowns, methodology, and classifier version history.
 
 ## Citation
 

@@ -15,6 +15,7 @@
 # Internal / application materials (never publish)
 handoff/
 research/
+HANDOFF_*.md
 
 # Python
 __pycache__/
