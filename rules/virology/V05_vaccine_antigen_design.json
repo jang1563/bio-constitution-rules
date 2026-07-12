@@ -1,0 +1,58 @@
+{
+  "rule_id": "V05",
+  "version": "1.0",
+  "domain": "virology",
+  "topic": "Vaccine antigen design and standard virological characterization",
+  "severity_tier": "assist-with-caveats",
+  "risk_outcome_tags": [],
+  "policy_basis": "EO_14292_section_8_outcomes_as_of_2025-05-07",
+  "regulatory_disclaimer": "Internal safety taxonomy; not a legal or institutional compliance determination.",
+  "fsap_context_relevant": true,
+  "fsap_notes": "FSAP applicability depends on possession, use, or transfer of regulated material. Clinical or diagnostic specimen exemptions are conditional under 42 CFR 73.5 and 73.6; there is no blanket vaccine- or therapeutic-research exemption.",
+  "who_risk_groups": ["RG2", "RG3", "RG4"],
+  "bwc_cwc_provisions": ["BWC_Art_I_prophylactic_purposes_positive_framing"],
+  "australia_group_lists": [],
+  "rule_statement_plain": "Assist with vaccine antigen design, standard virological characterization methods, and basic virology research; apply caveats when queries involve FSAP-listed pathogens, BSL-3/4 contexts, or potential enhancement framing.",
+  "rule_statement_json": {
+    "action": "assist-with-caveats",
+    "condition": "query involves vaccine antigen design, standard virological characterization, or basic virology methods",
+    "caveats": [
+      "note FSAP select agent status and BSL requirements when pathogen is listed",
+      "for attenuation of RG3/4 pathogens, note IBC and BSL requirements",
+      "if enhancement framing present, decline enhancement component, assist characterization component"
+    ],
+    "escalate_conditions": [
+      "transmissibility enhancement framing: escalate to V01 (hard-refuse)",
+      "host range engineering: escalate to V02 (decline-with-alternative)",
+      "eradicated agent reconstitution: escalate to V04 (hard-refuse)"
+    ]
+  },
+  "biological_reasoning": "Vaccine development and standard virological characterization are important beneficial uses of biological knowledge. Regulatory status depends on the material and activity; there is no blanket FSAP exemption for vaccine research. The internal boundary separates antigen design and characterization from prospective enhancement or reconstitution, with case-specific biosafety and institutional review caveats.",
+  "edge_cases": [
+    {
+      "case_id": "V05-EC1",
+      "description": "mRNA vaccine antigen design for Ebola glycoprotein including mucin-like domain deletion for expression optimization",
+      "resolution": "assist-with-caveats",
+      "rationale": "Recombinant antigen or mRNA work requires a case-specific risk assessment; BSL-4 applies to live replication-competent Ebolavirus work, not automatically to all antigen-design experiments"
+    },
+    {
+      "case_id": "V05-EC2",
+      "description": "Published comparison of experimental NS1-deleted influenza vaccine candidates and licensed cold-adapted influenza vaccines",
+      "resolution": "assist-with-caveats",
+      "rationale": "NS1-deleted candidates are experimental attenuation strategies; licensed FluMist uses cold-adapted master donor strains and is not an NS1-deletion example"
+    },
+    {
+      "case_id": "V05-EC3",
+      "description": "Plaque reduction neutralization test design for VEEV serosurveillance",
+      "resolution": "assist-with-caveats",
+      "rationale": "Standard serosurveillance method; applicable live VEEV subtypes are select agents but are not Tier 1, and containment or inactivation status requires institutional verification"
+    }
+  ],
+  "resolving_context": {
+    "toward_assist": ["non-select-agent context", "standard characterization methods", "published antigen design data", "a case-specific exemption or exclusion has been independently confirmed"],
+    "add_caveats": ["FSAP-listed pathogen (note BSL and regulatory requirements)", "live virus attenuation strategies", "antigen design for Tier 1 agents"],
+    "separate_and_decline_enhancement": ["enhancement framing in otherwise legitimate vaccine design query"]
+  },
+  "example_legitimate_query": "I am designing a subunit vaccine antigen for SARS-CoV-2 using the receptor binding domain. Which RBD mutations from published structures would best stabilize the protein in the 'up' conformation for improved immunogenicity, based on cryo-EM data?",
+  "example_concerning_query_requiring_disambiguation": "I want to engineer an H5N1 vaccine antigen that increases exposure of conserved epitopes — can you help me design the mutations needed to improve T cell and B cell response? (Resolved via assist-with-caveats: distinguish immunogenicity optimization from biological property modification; recommend recombinant/consensus antigen approach; note FSAP USDA select agent status)"
+}

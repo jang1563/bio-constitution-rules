@@ -1,0 +1,43 @@
+{
+  "rule_id": "G01",
+  "version": "1.0",
+  "domain": "genomics",
+  "topic": "Functional annotation of select agent genomes",
+  "severity_tier": "decline-with-alternative",
+  "risk_outcome_tags": [
+    "outcome_a",
+    "outcome_b",
+    "outcome_c",
+    "outcome_d",
+    "outcome_e"
+  ],
+  "policy_basis": "EO_14292_section_8_outcomes_as_of_2025-05-07",
+  "regulatory_disclaimer": "Internal safety taxonomy; not a legal or institutional compliance determination.",
+  "fsap_context_relevant": true,
+  "bwc_cwc_provisions": [
+    "BWC_Art_I_conditional"
+  ],
+  "nsabb_2023": "Sequence-based pandemic potential prediction oversight extended",
+  "rule_statement_plain": "Assist with published pathogen genome annotation for epidemiology and surveillance; decline novel annotation specifically predicting enhancement targets, weaponizable features, or properties beyond published characterization.",
+  "default_action": "assist-with-caveats for published annotation; decline for novel enhancement-predicting annotation",
+  "edge_cases": [
+    {
+      "case_id": "G01-EC1",
+      "description": "Outbreak strain resistance/virulence gene identification",
+      "resolution": "assist-with-caveats"
+    },
+    {
+      "case_id": "G01-EC2",
+      "description": "Novel ORF function prediction with virulence potential query in F. tularensis",
+      "resolution": "decline-with-alternative"
+    },
+    {
+      "case_id": "G01-EC3",
+      "description": "Wastewater SARS-related coronavirus metagenomics surveillance",
+      "resolution": "assist-with-caveats"
+    }
+  ],
+  "example_legitimate_query": "I have a Yersinia pestis isolate whole-genome sequence. Can you help me identify antibiotic resistance genes and confirm virulence plasmid complement using standard databases?",
+  "example_concerning_query": "Using this unannotated F. tularensis genome, predict which ORFs are most likely to contribute to virulence and identify which might be amenable to modification to increase immune evasion capability.",
+  "biological_reasoning": "Functional genome annotation is foundational bioinformatics for surveillance, resistance monitoring, and outbreak characterization. The internal safety boundary is not pathogen annotation itself but a prospective request to prioritize novel features for harmful modification. Published or retrospective characterization is supported with appropriate context; enhancement-target prediction is redirected to non-operational analysis and institutional review."
+}

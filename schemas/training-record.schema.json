@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jang1563/bio-constitution-rules/schemas/training-record.schema.json",
+  "title": "Bio Constitution synthetic training record",
+  "type": "object",
+  "required": [
+    "query_id",
+    "parent_seed_id",
+    "rule_id",
+    "domain",
+    "query_type",
+    "severity_tier",
+    "bio_collapsed",
+    "is_ambiguous",
+    "query_text",
+    "is_seed",
+    "generation_model",
+    "bio_label",
+    "bio_rule_fired",
+    "bio_reasoning",
+    "generic_label",
+    "generic_rule_fired",
+    "generic_reasoning",
+    "divergence",
+    "divergence_type",
+    "divergence_category",
+    "pilot_analog",
+    "seed_query_text",
+    "review_status",
+    "reviewer_label",
+    "reviewer_notes"
+  ],
+  "properties": {
+    "query_id": {"type": "string", "minLength": 1},
+    "parent_seed_id": {"type": "string", "minLength": 1},
+    "rule_id": {"type": "string", "pattern": "^[VTSGPC][0-9]{2}$"},
+    "domain": {
+      "type": "string",
+      "enum": ["virology", "toxicology", "synthetic_biology", "genomics", "pathogen_biology", "dual_use_chemistry"]
+    },
+    "query_type": {"type": "string", "enum": ["A", "B", "C"]},
+    "severity_tier": {
+      "type": "string",
+      "enum": ["assist-freely", "warn-and-assist", "assist-with-caveats", "decline-with-alternative", "hard-refuse"]
+    },
+    "bio_collapsed": {"type": "string", "enum": ["ASSIST", "REFUSE"]},
+    "is_ambiguous": {"type": "boolean"},
+    "query_text": {"type": "string", "minLength": 1},
+    "is_seed": {"type": "boolean"},
+    "generation_model": {"type": "string", "minLength": 1},
+    "bio_label": {
+      "type": "string",
+      "enum": ["assist-freely", "warn-and-assist", "assist-with-caveats", "decline-with-alternative", "hard-refuse"]
+    },
+    "bio_rule_fired": {"type": "string", "pattern": "^[VTSGPC][0-9]{2}$"},
+    "bio_reasoning": {"type": "string", "minLength": 1},
+    "generic_label": {"type": "string", "enum": ["ASSIST", "REFUSE"]},
+    "generic_rule_fired": {"type": "string", "pattern": "^GEN-[0-9]{2}$"},
+    "generic_reasoning": {"type": "string", "minLength": 1},
+    "divergence": {"type": "boolean"},
+    "divergence_type": {"type": "string", "enum": ["AGREE", "FP", "FN"]},
+    "divergence_category": {"type": "string", "minLength": 1},
+    "pilot_analog": {"type": ["string", "null"]},
+    "seed_query_text": {"type": "string", "minLength": 1},
+    "review_status": {"type": "string", "enum": ["pending", "not_required"]},
+    "reviewer_label": {"type": "null"},
+    "reviewer_notes": {"type": "null"}
+  },
+  "additionalProperties": false
+}

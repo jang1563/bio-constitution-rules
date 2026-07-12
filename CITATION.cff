@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this dataset or rule library, please cite it using this metadata."
+type: dataset
+title: "Bio Constitution Rules"
+abstract: >
+  A research dataset containing 30 machine-readable decision rules for
+  biological dual-use content across six domains and a 1,063-record synthetic,
+  rule-derived text-classification corpus. The labels are not independently
+  expert validated and the artifact is not a production safeguard.
+authors:
+  - name: "jang1563"
+version: "1.0.0"
+date-released: "2026-07-13"
+license: Apache-2.0
+repository-code: "https://github.com/jang1563/bio-constitution-rules"
+url: "https://huggingface.co/datasets/jang1563/bio-constitution-rules"
+keywords:
+  - biosafety
+  - biosecurity
+  - dual-use research
+  - content moderation
+  - synthetic data
+  - responsible AI

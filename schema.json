@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "bio-constitution-rule/v1.0",
+  "title": "Bio Constitution Rule",
+  "description": "Schema for a single bio-domain decision rule in the Bio Constitution Rules dataset. Each rule covers one decision type within one of six domains and provides biological reasoning, edge cases, a response tier, and dated regulatory research annotations.",
+  "type": "object",
+  "required": [
+    "rule_id",
+    "version",
+    "domain",
+    "topic",
+    "severity_tier",
+    "rule_statement_plain",
+    "biological_reasoning",
+    "edge_cases",
+    "risk_outcome_tags",
+    "policy_basis",
+    "regulatory_disclaimer"
+  ],
+  "properties": {
+    "rule_id": {
+      "type": "string",
+      "pattern": "^[VTSGPC][0-9]{2}$",
+      "description": "Unique rule identifier. Prefix letter encodes domain (V=Virology, T=Toxicology, S=Synthetic Biology, G=Genomics, P=Pathogen Biology, C=Dual-Use Chemistry). Two-digit suffix is 01-05 within domain.",
+      "examples": [
+        "V01",
+        "T03",
+        "G05",
+        "C02"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of this rule record.",
+      "examples": [
+        "1.0",
+        "1.1"
+      ]
+    },
+    "domain": {
+      "type": "string",
+      "enum": [
+        "virology",
+        "toxicology",
+        "synthetic_biology",
+        "genomics",
+        "pathogen_biology",
+        "dual_use_chemistry"
+      ],
+      "description": "One of the six bio domains defined in the Bio Constitution Rules Library taxonomy."
+    },
+    "topic": {
+      "type": "string",
+      "minLength": 5,
+      "description": "Human-readable topic name for this rule.",
+      "examples": [
+        "Airborne transmission enhancement experiments",
+        "CWC Schedule 1 compound synthesis and close structural analogs"
+      ]
+    },
+    "severity_tier": {
+      "type": "string",
+      "enum": [
+        "warn-and-assist",
+        "assist-with-caveats",
+        "decline-with-alternative",
+        "hard-refuse"
+      ],
+      "description": "Response severity tier. Ordered from least to most restrictive: warn-and-assist (proceed with notice), assist-with-caveats (proceed with explicit caveats), decline-with-alternative (decline and offer a substantive alternative), hard-refuse (decline with no alternative; applies when any assistance circumvents safety layer)."
+    },
+    "risk_outcome_tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(outcome_[a-g](?:_[a-z]+)?|internal_analogy_to_outcome_g)$"
+      },
+      "uniqueItems": true,
+      "description": "Internal safety-research tags aligned to the outcome letters in Executive Order 14292 section 8. These tags are not legal or institutional compliance determinations. Empty when no direct outcome tag is assigned.",
+      "examples": [
+        [
+          "outcome_d"
+        ],
+        [
+          "outcome_a",
+          "outcome_e"
+        ],
+        [
+          "internal_analogy_to_outcome_g"
+        ],
+        []
+      ]
+    },
+    "policy_basis": {
+      "type": "string",
+      "const": "EO_14292_section_8_outcomes_as_of_2025-05-07",
+      "description": "Versioned policy reference used to name risk_outcome_tags."
+    },
+    "regulatory_disclaimer": {
+      "type": "string",
+      "const": "Internal safety taxonomy; not a legal or institutional compliance determination."
+    },
+    "fsap_context_relevant": {
+      "type": "boolean",
+      "description": "Whether Federal Select Agent Program context may be relevant to material or activities mentioned by the rule. This is not a determination that a particular project or computational task is regulated."
+    },
+    "bwc_cwc_provisions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "BWC or CWC provisions directly applicable to this rule. Format: {treaty}_{article}_{shortname}, e.g., 'BWC_Art_I', 'CWC_Sched_1', 'CWC_Art_II_9b_protective_purposes'.",
+      "examples": [
+        [
+          "BWC_Art_I",
+          "CWC_Art_II_1b_delivery_munitions"
+        ],
+        [
+          "CWC_Sched_1",
+          "CWC_Art_II_1_general_purpose_criterion"
+        ]
+      ]
+    },
+    "australia_group_lists": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Australia Group Common Control Lists relevant to this rule.",
+      "examples": [
+        [
+          "biological_agents_human_animal_pathogens"
+        ],
+        [
+          "chemical_precursors_schedule1_precursors",
+          "biological_equipment_fermenters_lyophilizers"
+        ]
+      ]
+    },
+    "rule_statement_plain": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Plain-language rule statement in 1-3 sentences. States what the rule approves or declines and under what conditions. Should be understandable without domain expertise."
+    },
+    "biological_reasoning": {
+      "type": "string",
+      "minLength": 50,
+      "description": "Technical explanation of why the rule's line falls where it does. This is the irreplaceable domain-expert content \u2014 it must be biologically accurate and cite specific mechanisms, thresholds, or precedents that justify the severity tier."
+    },
+    "edge_cases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "description",
+          "resolution"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "pattern": "^[VTSGPC][0-9]{2}-EC[0-9]+$",
+            "description": "Edge case identifier linking to parent rule.",
+            "examples": [
+              "V01-EC1",
+              "T03-EC2"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Brief description of the edge case scenario \u2014 what makes it ambiguous or context-dependent."
+          },
+          "resolution": {
+            "type": "string",
+            "description": "How this rule resolves the edge case. Should reference the severity tier and any resolving context applied."
+          },
+          "rationale": {
+            "type": "string",
+            "description": "Optional: additional reasoning for why this resolution differs from or aligns with the main rule."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Concrete edge-case scenarios where the rule requires contextual judgment. Each case should be realistic and relevant to biological safety classification."
+    },
+    "resolving_context": {
+      "description": "Context signals that shift the severity tier up or down. May be an object with 'toward_assist' and 'escalate' arrays (structured form) or an ad-hoc object. Optional \u2014 structured form preferred.",
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "toward_assist": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "escalate": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "hard_refuse": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "additionalProperties": true
+        }
+      ]
+    },
+    "fsap_thresholds_mg": {
+      "type": "object",
+      "description": "Current FSAP aggregate permissible amounts in milligrams for toxins addressed by this rule. These are regulatory quantity exclusions, not safety thresholds.",
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0
+      },
+      "examples": [
+        {
+          "botulinum_neurotoxins": 1,
+          "ricin": 1000,
+          "saxitoxin": 500
+        }
+      ]
+    },
+    "fsap_agents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "FSAP select agents directly referenced by this rule. Format: {agent}_{tier}, e.g., 'yersinia_pestis_tier1', 'botulinum_tier1'."
+    },
+    "fsap_notes": {
+      "type": "string",
+      "description": "Free-text notes on FSAP applicability when thresholds or agent list is insufficient to capture nuance."
+    },
+    "fsap_overlap": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Agents or toxins that appear on both FSAP and another regulatory list (e.g., CWC Schedule 1). Documents cross-framework overlap."
+    },
+    "who_risk_groups": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "RG1",
+          "RG2",
+          "RG3",
+          "RG4"
+        ]
+      },
+      "description": "WHO Risk Group classifications directly relevant to this rule."
+    },
+    "igsc_screening_protocol": {
+      "type": "string",
+      "description": "Reference to IGSC (International Gene Synthesis Consortium) or other synthesis screening protocol relevant to this rule."
+    },
+    "nsabb_2023": {
+      "type": "string",
+      "description": "Legacy research note about the 2023 NSABB recommendations; not a current compliance classification."
+    },
+    "p3co_framework": {
+      "type": "string",
+      "description": "Legacy reference to the HHS 2017 P3CO framework; retained only as historical rule-authoring context."
+    },
+    "example_legitimate_query": {
+      "type": "string",
+      "minLength": 20,
+      "description": "A realistic query that this rule approves, with or without caveats."
+    },
+    "example_concerning_query": {
+      "type": "string",
+      "minLength": 20,
+      "description": "A realistic query that this rule declines or hard-refuses. Should be specific and clearly fall within the rule's concern condition."
+    }
+  },
+  "additionalProperties": true,
+  "examples": [
+    {
+      "rule_id": "V01",
+      "version": "1.0",
+      "domain": "virology",
+      "topic": "Airborne transmission enhancement experiments",
+      "severity_tier": "hard-refuse",
+      "risk_outcome_tags": [
+        "outcome_d"
+      ],
+      "policy_basis": "EO_14292_section_8_outcomes_as_of_2025-05-07",
+      "regulatory_disclaimer": "Internal safety taxonomy; not a legal or institutional compliance determination.",
+      "fsap_context_relevant": true,
+      "bwc_cwc_provisions": [
+        "BWC_Art_I"
+      ],
+      "australia_group_lists": [
+        "biological_agents_human_animal_pathogens",
+        "aerosol_inhalation_chambers"
+      ],
+      "rule_statement_plain": "Decline all requests for experimental design guidance on enhancing the airborne transmission of influenza, coronaviruses, or other respiratory pathogens through gain-of-function or serial passage approaches.",
+      "biological_reasoning": "Prospective enhancement of pathogen transmissibility is treated as a high-consequence internal safety outcome. Retrospective characterization of naturally occurring variants is a distinct research use case.",
+      "edge_cases": [
+        {
+          "case_id": "V01-EC1",
+          "description": "Retrospective characterization of natural H5N1 isolates for transmission correlates",
+          "resolution": "assist-with-caveats",
+          "rationale": "Retrospective analysis of naturally occurring variants is surveillance \u2014 distinct from prospective engineering guidance"
+        }
+      ],
+      "example_legitimate_query": "What are the known molecular determinants of airborne transmission in seasonal H3N2 influenza based on published epidemiological surveillance data?",
+      "example_concerning_query": "What specific mutations in PB2 and HA would I need to introduce into an H5N1 strain to test whether I can replicate Fouchier's ferret transmission results?"
+    }
+  ]
+}
